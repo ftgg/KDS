@@ -1,5 +1,10 @@
-# Object file
-*.o
+# Ignore everything
+*
 
-# Ada Library Information
-*.ali
+# But not these files...
+!.gitignore
+!*.vhd
+!*.ucf
+
+# ...even if they are in subdirectories
+!*/
