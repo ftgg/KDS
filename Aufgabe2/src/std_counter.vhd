@@ -43,32 +43,51 @@ END std_counter;
 -- zur Entity std_counter implementiert werden
 --
 ARCHITECTURE struktur OF std_counter IS
+
+   COMPONENT edge_detector IS
+   GENERIC (RSTDEF: std_logic);
+   PORT    (rst: IN std_logic;   -- RESET
+            clk: IN std_logic;   -- CLOCK
+            din: IN std_logic;   -- DATA IN SIGNAL TO OBSERVE
+            dout: OUT std_logic; -- DATA OUT SIGNAL TO OBSERVE
+            redge: OUT std_logic;   -- RISING EDGE
+            fedge: OUT std_logic);  -- FALLING EDGE
+   END COMPONENT;
+    
+
 	signal cnt_reg : std_logic_vector(CNTLEN downto 0);
+   signal fedge : std_logic;
+   signal redge : std_logic;
 BEGIN
+
+   edge_event: edge_detector
+   GENERIC MAP(RSTDEF => RSTDEF)
+   PORT MAP    (rst => rst,
+                clk => clk,
+                din => cnt_reg(0),
+                redge => redge,
+                fedge => fedge);
+
+
 	process (rst, clk) begin
 		if rst=RSTDEF then
-			cnt_reg <= (others => '0')
+			cnt_reg <= (others => '0');
 		elsif rising_edge(clk) then
 			if swrst=RSTDEF then
 				cnt_reg <= (others => '0');
 			elsif en='0' then
-				cnt_reg <= cnt_reg
+				cnt_reg <= cnt_reg;
 			elsif load='1' then
-				cnt_reg <= '0' & din
+				cnt_reg <= '0' & din;
 			elsif dec='1' then
-				cnt_reg <= cnt_reg - 1
+				cnt_reg <= cnt_reg - 1;
 			elsif inc='1' then
-				cnt_reg <= cnt_reg + 1
+				cnt_reg <= cnt_reg + 1;
 			end if;
+         -- Check Carry
+         cout <= redge or fedge;
+         dout <= cnt_reg(CNTLEN-1 downto 0);
 		end if;
-		-- Check Carry
-		if rising_edge(cnt_reg(CNTLEN)) or falling_edge(cnt_reg(CNTLEN)) then
-			cout <= '1'
-		else
-			cout <='0'
-		end if;
-		
-		dout <= cnt_reg(CNTLEN-1 downto 0)
-		
+    
 	end process;
 END struktur;		
