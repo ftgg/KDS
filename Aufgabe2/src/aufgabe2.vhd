@@ -2,6 +2,8 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
+
+
 ENTITY aufgabe2 IS
    PORT(rst:  IN  std_logic;                     -- (BTN3) User Reset
         clk:  IN  std_logic;                     -- 50 MHz crystal oscillator clock source
@@ -12,13 +14,15 @@ ENTITY aufgabe2 IS
         an:   OUT std_logic_vector(3 DOWNTO 0);  -- 4 digit enable (anode control) signals (active low)
         seg:  OUT std_logic_vector(7 DOWNTO 1);  -- 7 FPGA connections to seven-segment display (active low)
         dp:   OUT std_logic;                     -- 1 FPGA connection to digit doint (active low)
-        LD0:  OUT std_logic);                    -- 1 FPGA connection to LD0 (carry output)
+        LD0:  OUT std_logic;                    -- 1 FPGA connection to LD0 (carry output)
+        LD1: OUT std_logic);
 END aufgabe2;
 
 ARCHITECTURE structure OF aufgabe2 IS
    CONSTANT RSTDEF: std_logic := '1';
    CONSTANT CNTLEN: natural := 16;
 
+   
    COMPONENT sync_module IS
       GENERIC(RSTDEF: std_logic);
       PORT(rst:   IN  std_logic;  -- reset, active RSTDEF
@@ -29,7 +33,8 @@ ARCHITECTURE structure OF aufgabe2 IS
            BTN2:  IN  std_logic;  -- push button -> inc
            load:  OUT std_logic;  -- load,      high active
            dec:   OUT std_logic;  -- decrement, high active
-           inc:   OUT std_logic); -- increment, high active
+           inc:   OUT std_logic; -- increment, high active
+           debug: OUT std_logic); -- TODO debug
    END COMPONENT;
 
    COMPONENT std_counter IS
@@ -83,7 +88,8 @@ BEGIN
             BTN2  => BTN2,
             load  => load,
             dec   => dec,
-            inc   => inc);
+            inc   => inc,
+            debug => LD1);
 
    u2: std_counter
    GENERIC MAP(RSTDEF => RSTDEF,

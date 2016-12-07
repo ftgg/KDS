@@ -64,7 +64,7 @@ BEGIN
    GENERIC MAP(RSTDEF => RSTDEF)
    PORT MAP    (rst => rst,
                 clk => clk,
-                din => cnt_reg(0),
+                din => cnt_reg(CNTLEN-1),
                 redge => redge,
                 fedge => fedge);
 

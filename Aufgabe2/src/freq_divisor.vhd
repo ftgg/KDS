@@ -12,6 +12,7 @@ ENTITY freq_divisor IS
    PORT(rst:   IN    std_logic;
         clk:   IN    std_logic;
         swrst: IN    std_logic;
+        en:    IN    std_logic;
         cout:  OUT   std_logic);
 END freq_divisor;
 
@@ -39,7 +40,8 @@ BEGIN
    GENERIC MAP(RSTDEF => RSTDEF)
    PORT MAP    (rst => rst,
                 clk => clk,
-                din => cnt_reg(0),
+                din => cnt_reg(CNTLEN-1),
+                dout => open,
                 redge => redge,
                 fedge => fedge);
 
@@ -49,9 +51,9 @@ BEGIN
       elsif rising_edge(clk) then
          if swrst=RSTDEF then
             cnt_reg <= (others => '0');
-         else
+         elsif en='1' then
             cnt_reg <= cnt_reg + 1;
-         end if; 
+         end if;
          cout <= redge or fedge;  
       end if;
          

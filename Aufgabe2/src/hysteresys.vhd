@@ -61,18 +61,20 @@ BEGIN
    process (rst, clk) begin
       if rst=RSTDEF then
 			state <= '0';
+         --dout_hys <= '0';
       elsif rising_edge(clk) then
          if swrst=RSTDEF then
             state <= '0';
+            --dout_hys <= '0';
          elsif en='0' then
             state <= state; -- TODO is this necessary
          else
             if carry='1' then
-               if out_cnt_hys(0)='1' then 
+               if out_cnt_hys(SAMPLES-1)='1' then 
                   load_hys<='1'; -- load Counter with 0
                else
                   state <= not state;
-                  dout_hys <= '1';
+                  dout_hys <= not state;
                end if;
             else
                if din_hys = state then

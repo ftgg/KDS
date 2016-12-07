@@ -13,7 +13,8 @@ ENTITY sync_module IS
         BTN2:  IN  std_logic;  -- push button -> inc
         load:  OUT std_logic;  -- load,      high active
         dec:   OUT std_logic;  -- decrement, high active
-        inc:   OUT std_logic); -- increment, high active
+        inc:   OUT std_logic; -- increment, high active
+        debug: OUT std_logic); -- TODO debug
 END sync_module;
 
 --
@@ -22,7 +23,7 @@ END sync_module;
 --
 
 ARCHITECTURE sync_module_behaviour OF sync_module IS
-   CONSTANT FREQ_DIVISOR_LEN: natural := 15;
+   CONSTANT FREQ_DIVISOR_LEN: natural := 20;
    
    COMPONENT freq_divisor IS
    GENERIC (RSTDEF:  std_logic :='1';
@@ -30,6 +31,7 @@ ARCHITECTURE sync_module_behaviour OF sync_module IS
    PORT(rst:   IN    std_logic;
         clk:   IN    std_logic;
         swrst: IN    std_logic;
+        en:    IN    std_logic;
         cout:  OUT   std_logic);
    END COMPONENT;
    
@@ -55,6 +57,7 @@ BEGIN
    PORT MAP    (  rst => rst,
                   clk => clk,
                   swrst => swrst,
+                  en => '1',
                   cout => enable);
                   
    
@@ -91,5 +94,8 @@ BEGIN
                   dout => inc,
                   redge => open,
                   fedge => open);
+                  
+                  
+   debug <= enable;
                   
 END sync_module_behaviour;

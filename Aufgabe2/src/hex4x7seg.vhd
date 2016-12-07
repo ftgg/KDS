@@ -22,7 +22,19 @@ END hex4x7seg;
 ARCHITECTURE struktur OF hex4x7seg IS
   -- hier sind benutzerdefinierte Konstanten und Signale einzutragen
 	constant DIV_MAX : natural := 14;
-	
+   
+   COMPONENT freq_divisor IS
+   GENERIC (RSTDEF:  std_logic :='1';
+            CNTLEN:  natural   := DIV_MAX);
+   PORT(rst:   IN    std_logic;
+        clk:   IN    std_logic;
+        swrst: IN    std_logic;
+        en:    IN    std_logic;
+        cout:  OUT   std_logic);
+   END COMPONENT;
+   
+   
+   
    COMPONENT edge_detector IS
    GENERIC (RSTDEF: std_logic);
    PORT    (rst: IN std_logic;   -- RESET
@@ -33,7 +45,7 @@ ARCHITECTURE struktur OF hex4x7seg IS
             fedge: OUT std_logic);  -- FALLING EDGE
    END COMPONENT;
     
-   signal div_cnt : std_logic_vector(0 to DIV_MAX);
+   --signal div_cnt : std_logic_vector(0 to DIV_MAX);
 	signal select_cnt : std_logic_vector(0 to 1);
 	
 	signal an_x_tmp : std_logic_vector(0 to 3);
@@ -43,37 +55,21 @@ ARCHITECTURE struktur OF hex4x7seg IS
 	signal dp_tmp : std_logic;
 	signal cout: std_logic;
    
-   signal redge: std_logic;
-   signal fedge: std_logic;
+   --signal redge: std_logic;
+   --signal fedge: std_logic;
    
 BEGIN
    
-   edge_event: edge_detector
-   GENERIC MAP(RSTDEF => RSTDEF)
-   PORT MAP    (rst => rst,
-                clk => clk,
-                din => div_cnt(0),
-                redge => redge,
-                fedge => fedge,
-					 dout => open);
-
-
-   -- Modulo-2**14-Zaehler als Prozess
-	process (rst,clk) begin
-		if rst=RSTDEF then
-			div_cnt <= (others => '0');
-		elsif rising_edge(clk) then
-			if swrst=RSTDEF then
-				div_cnt <= (others => '0');
-			elsif en='1' then
-				div_cnt <= div_cnt + 1;
-			end if;
-         cout <= redge or fedge;
-		end if;
-      
-
-      
-	end process;
+   
+   freq_div: freq_divisor
+   GENERIC MAP (  RSTDEF => RSTDEF,
+                  CNTLEN => DIV_MAX)
+   PORT MAP    (  rst => rst,
+                  clk => clk,
+                  swrst => swrst,
+                  en => en,
+                  cout => cout);
+   
    
    -- Modulo-4-Zaehler als Prozess
 	process (rst, clk) begin

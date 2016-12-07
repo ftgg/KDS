@@ -17,10 +17,52 @@ ENTITY hex4x7seg IS
 END hex4x7seg;
 
 
+
+
 ARCHITECTURE struktur OF hex4x7seg IS
   -- hier sind benutzerdefinierte Konstanten und Signale einzutragen
 	constant DIV_MAX : natural := 14;
-	signal div_cnt : std_logic_vector(0 to DIV_MAX-1);
+   
+   COMPONENT freq_divisor IS
+   GENERIC (RSTDEF:  std_logic :='1';
+            CNTLEN:  natural   := DIV_MAX);
+   PORT(rst:   IN    std_logic;
+        clk:   IN    std_logic;
+        swrst: IN    std_logic;
+        en:    IN    std_logic;
+        cout:  OUT   std_logic);
+   END COMPONENT;
+   
+   
+   
+   COMPONENT edge_detector IS
+   GENERIC (RSTDEF: std_logic);
+   PORT    (rst: IN std_logic;   -- RESET
+            clk: IN std_logic;   -- CLOCK
+            din: IN std_logic;   -- DATA IN SIGNAL TO OBSERVE
+            dout: OUT std_logic; -- DATA OUT SIGNAL TO OBSERVE
+            redge: OUT std_logic;   -- RISING EDGE
+            fedge: OUT std_logic);  -- FALLING EDGE
+   END COMPONENT;
+    
+   COMPONENT std_counter IS
+      GENERIC(RSTDEF: std_logic;
+              CNTLEN: natural);
+      PORT(rst:   IN  std_logic;  -- reset,           RSTDEF active
+           clk:   IN  std_logic;  -- clock,           rising edge
+           en:    IN  std_logic;  -- enable,          high active
+           inc:   IN  std_logic;  -- increment,       high active
+           dec:   IN  std_logic;  -- decrement,       high active
+           load:  IN  std_logic;  -- load value,      high active
+           swrst: IN  std_logic;  -- software reset,  RSTDEF active
+           cout:  OUT std_logic;  -- carry,           high active
+           din:   IN  std_logic_vector(CNTLEN-1 DOWNTO 0);
+           dout:  OUT std_logic_vector(CNTLEN-1 DOWNTO 0));
+   END COMPONENT; 
+    
+    
+    
+   --signal div_cnt : std_logic_vector(0 to DIV_MAX);
 	signal select_cnt : std_logic_vector(0 to 1);
 	
 	signal an_x_tmp : std_logic_vector(0 to 3);
@@ -28,39 +70,56 @@ ARCHITECTURE struktur OF hex4x7seg IS
 	signal output_digit_tmp: std_logic_vector(0 to 3);
 	signal seg_x_tmp : std_logic_vector(0 to 6);
 	signal dp_tmp : std_logic;
-	
+	signal cout: std_logic;
+   
+   --signal redge: std_logic;
+   --signal fedge: std_logic;
+   
 BEGIN
-
-   -- Modulo-2**14-Zaehler als Prozess
-	process (rst,clk) begin
-		if rst=RSTDEF then
-			div_cnt <= (others => '0');
-		elsif rising_edge(clk) then
-			if swrst=RSTDEF then
-				div_cnt <= (others => '0');
-			elsif en='1' then
-				div_cnt <= div_cnt + 1;
-			end if;
-		end if;
-	end process;
+   
+   
+   freq_div: freq_divisor
+   GENERIC MAP (  RSTDEF => RSTDEF,
+                  CNTLEN => DIV_MAX)
+   PORT MAP    (  rst => rst,
+                  clk => clk,
+                  swrst => swrst,
+                  en => en,
+                  cout => cout);
+   
    
    -- Modulo-4-Zaehler als Prozess
-	process (rst, clk) begin
-		if rst=RSTDEF then
-			select_cnt <= (others => '0');
-		elsif rising_edge(clk) then
-			if swrst=RSTDEF then
-				select_cnt <= (others => '0');
-			elsif en='1' and div_cnt = 0 then
-				select_cnt <= select_cnt + 1;
-			else
-				select_cnt <= select_cnt;
-			end if;
-		else
-			select_cnt <= select_cnt;
-		end if;
-	end process;
+	-- process (rst, clk) begin
+		-- if rst=RSTDEF then
+			-- select_cnt <= (others => '0');
+		-- elsif rising_edge(clk) then
+			-- if swrst=RSTDEF then
+				-- select_cnt <= (others => '0');
+			-- elsif en='1' and cout='1' then
+				-- select_cnt <= select_cnt + 1;
+			-- else
+				-- select_cnt <= select_cnt;
+			-- end if;
+		-- else
+			-- select_cnt <= select_cnt;
+		-- end if;
+	-- end process;
 		
+
+   hys_cnt: std_counter
+   GENERIC MAP(RSTDEF => RSTDEF,
+               CNTLEN => 2)
+   PORT MAP(rst   => rst,
+            clk   => clk,
+            en    => cout,
+            inc   => '1',
+            dec   => '0',
+            load  => '0',
+            swrst => swrst,
+            cout  => open,
+            din   => "00",
+            dout  => select_cnt);
+   
 
    -- 1-aus-4-Dekoder als selektierte Signalzuweisung
 	with select_cnt select
@@ -116,3 +175,5 @@ BEGIN
 	
 
 END struktur;
+
+
