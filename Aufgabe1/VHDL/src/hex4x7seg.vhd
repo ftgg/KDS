@@ -89,36 +89,22 @@ BEGIN
    
    
    -- Modulo-4-Zaehler als Prozess
-	-- process (rst, clk) begin
-		-- if rst=RSTDEF then
-			-- select_cnt <= (others => '0');
-		-- elsif rising_edge(clk) then
-			-- if swrst=RSTDEF then
-				-- select_cnt <= (others => '0');
-			-- elsif en='1' and cout='1' then
-				-- select_cnt <= select_cnt + 1;
-			-- else
-				-- select_cnt <= select_cnt;
-			-- end if;
-		-- else
-			-- select_cnt <= select_cnt;
-		-- end if;
-	-- end process;
+	process (rst, clk) begin
+		if rst=RSTDEF then
+			select_cnt <= (others => '0');
+		elsif rising_edge(clk) then
+			if swrst=RSTDEF then
+				select_cnt <= (others => '0');
+			elsif en='1' and cout='1' then
+				select_cnt <= select_cnt + 1;
+			else
+				select_cnt <= select_cnt;
+			end if;
+		else
+			select_cnt <= select_cnt;
+		end if;
+	end process;
 		
-
-   hys_cnt: std_counter
-   GENERIC MAP(RSTDEF => RSTDEF,
-               CNTLEN => 2)
-   PORT MAP(rst   => rst,
-            clk   => clk,
-            en    => cout,
-            inc   => '1',
-            dec   => '0',
-            load  => '0',
-            swrst => swrst,
-            cout  => open,
-            din   => "00",
-            dout  => select_cnt);
    
 
    -- 1-aus-4-Dekoder als selektierte Signalzuweisung

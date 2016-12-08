@@ -30,7 +30,7 @@ ARCHITECTURE struktur OF freq_divisor IS
             fedge: OUT std_logic);  -- FALLING EDGE
    END COMPONENT;
    
-	signal cnt_reg: std_logic_vector(CNTLEN downto 0) := (others => '0');
+	signal cnt_reg: std_logic_vector(CNTLEN downto 0);
    signal redge: std_logic;
    signal fedge: std_logic;
    
@@ -40,7 +40,7 @@ BEGIN
    GENERIC MAP(RSTDEF => RSTDEF)
    PORT MAP    (rst => rst,
                 clk => clk,
-                din => cnt_reg(CNTLEN),
+                din => cnt_reg(CNTLEN - 1),
                 dout => open,
                 redge => redge,
                 fedge => fedge);

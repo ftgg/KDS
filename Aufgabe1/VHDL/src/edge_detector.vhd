@@ -21,7 +21,6 @@ ARCHITECTURE edge_detector_behaviour OF edge_detector IS
       PORT( rst:  IN std_logic;  -- reset, RSTDEF active
             clk:  IN std_logic;  -- clock, rising edge
             din:  IN std_logic;  -- data input
-            en:   IN std_logic;
             dout: OUT std_logic); -- data output
    END COMPONENT;
   
@@ -33,12 +32,10 @@ BEGIN
    PORT MAP   (rst => rst,
                clk => clk,
                din => din,
-               en => '1',
                dout => reg_out);
    
-   fedge <= reg_out and (not din);
    redge <= (not reg_out) and din;
+   fedge <= reg_out and (not din);
    dout <= reg_out;
-
    
 END edge_detector_behaviour;

@@ -66,8 +66,6 @@ BEGIN
          if swrst=RSTDEF then
             state <= '0';
             --dout_hys <= '0';
-         elsif en='0' then
-            state <= state; -- TODO is this necessary
          else
             if carry='1' then
                if out_cnt_hys(SAMPLES-1)='1' then 

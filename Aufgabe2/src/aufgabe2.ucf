@@ -3,7 +3,6 @@
 NET "rst"       LOC = "L14" | IOSTANDARD = LVCMOS33;   # user reset button
 NET "clk"       LOC = "T9"  | IOSTANDARD = LVCMOS33;   # GCK0, master clock 50 MHz, fix wired!
 NET "ld0"       LOC = "K12" | IOSTANDARD = LVCMOS33;   # carry
-NET "ld1"       LOC = "P14" | IOSTANDARD = LVCMOS33;   # TESTLED
 NET "btn2"      LOC = "L13" | IOSTANDARD = LVCMOS33;   # increment
 NET "btn1"      LOC = "M14" | IOSTANDARD = LVCMOS33;   # decrement
 NET "btn0"      LOC = "M13" | IOSTANDARD = LVCMOS33;   # load

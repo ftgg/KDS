@@ -55,8 +55,7 @@ ARCHITECTURE struktur OF std_counter IS
    END COMPONENT;
     
 
-	signal cnt_reg : std_logic_vector(CNTLEN downto 0) := (others => '0');
-   signal internal_carry : std_logic;
+	signal cnt_reg : std_logic_vector(CNTLEN downto 0);
    signal fedge : std_logic;
    signal redge : std_logic;
 BEGIN
@@ -65,7 +64,7 @@ BEGIN
    GENERIC MAP(RSTDEF => RSTDEF)
    PORT MAP    (rst => rst,
                 clk => clk,
-                din => cnt_reg(CNTLEN),
+                din => cnt_reg(1),
                 redge => redge,
                 fedge => fedge);
 
@@ -79,7 +78,7 @@ BEGIN
 			elsif en='0' then
 				cnt_reg <= cnt_reg;
 			elsif load='1' then
-				cnt_reg <= cnt_reg(CNTLEN) & din;
+				cnt_reg <= '0' & din;
 			elsif dec='1' then
 				cnt_reg <= cnt_reg - 1;
 			elsif inc='1' then

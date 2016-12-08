@@ -14,8 +14,7 @@ ENTITY aufgabe2 IS
         an:   OUT std_logic_vector(3 DOWNTO 0);  -- 4 digit enable (anode control) signals (active low)
         seg:  OUT std_logic_vector(7 DOWNTO 1);  -- 7 FPGA connections to seven-segment display (active low)
         dp:   OUT std_logic;                     -- 1 FPGA connection to digit doint (active low)
-        LD0:  OUT std_logic;                    -- 1 FPGA connection to LD0 (carry output)
-        LD1: OUT std_logic);
+        LD0:  OUT std_logic);                    -- 1 FPGA connection to LD0 (carry output)
 END aufgabe2;
 
 ARCHITECTURE structure OF aufgabe2 IS
@@ -33,8 +32,7 @@ ARCHITECTURE structure OF aufgabe2 IS
            BTN2:  IN  std_logic;  -- push button -> inc
            load:  OUT std_logic;  -- load,      high active
            dec:   OUT std_logic;  -- decrement, high active
-           inc:   OUT std_logic; -- increment, high active
-           debug: OUT std_logic); -- TODO debug
+           inc:   OUT std_logic); -- increment, high active
    END COMPONENT;
 
    COMPONENT std_counter IS
@@ -88,8 +86,7 @@ BEGIN
             BTN2  => BTN2,
             load  => load,
             dec   => dec,
-            inc   => inc,
-            debug => LD1);
+            inc   => inc);
 
    u2: std_counter
    GENERIC MAP(RSTDEF => RSTDEF,
