@@ -43,6 +43,17 @@ END std_counter;
 -- zur Entity std_counter implementiert werden
 --
 ARCHITECTURE struktur OF std_counter IS
+
+   COMPONENT edge_detector IS
+   GENERIC (RSTDEF: std_logic);
+   PORT    (rst: IN std_logic;   -- RESET
+            clk: IN std_logic;   -- CLOCK
+            din: IN std_logic;   -- DATA IN SIGNAL TO OBSERVE
+            dout: OUT std_logic; -- DATA OUT SIGNAL TO OBSERVE
+            redge: OUT std_logic;   -- RISING EDGE
+            fedge: OUT std_logic);  -- FALLING EDGE
+   END COMPONENT;
+    
    signal cnt_sig : std_logic_vector(CNTLEN   downto 0);
 	signal cnt_reg : std_logic_vector(CNTLEN-1 downto 0);
    signal internal_carry : std_logic;
@@ -63,6 +74,7 @@ BEGIN
 				cnt_reg <= (others => '0');
          else
             if en='1' then
+               cnt_reg <= cnt_reg;
                if load='1' then
                   cnt_reg <= din;
                   cout <= '0';
@@ -73,9 +85,9 @@ BEGIN
                   cnt_reg <= cnt_reg + 1;
                   cout <= cnt_sig(CNTLEN);
                end if;
-               dout <= cnt_reg(CNTLEN-1 downto 0);
             end if;
 			end if;
+         dout <= cnt_reg(CNTLEN-1 downto 0);
 		end if;
     
 	end process;

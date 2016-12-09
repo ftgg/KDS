@@ -20,7 +20,7 @@ END hysteresys;
 ARCHITECTURE hysteresys_behaviour OF hysteresys IS
    constant ZERO_VECTOR: std_logic_vector(SAMPLES-1 DOWNTO 0) := (others => '0');
    
-      COMPONENT std_counter IS
+   COMPONENT std_counter IS
       GENERIC(RSTDEF: std_logic;
               CNTLEN: natural);
       PORT(rst:   IN  std_logic;  -- reset,           RSTDEF active
@@ -35,12 +35,22 @@ ARCHITECTURE hysteresys_behaviour OF hysteresys IS
            dout:  OUT std_logic_vector(CNTLEN-1 DOWNTO 0));
    END COMPONENT;
    
+   COMPONENT dff IS
+      GENERIC(RSTDEF:  std_logic := '1');
+      PORT( rst:  IN std_logic;  -- reset, RSTDEF active
+            clk:  IN std_logic;  -- clock, rising edge
+            din:  IN std_logic;  -- data input
+            en:   IN std_logic;
+            dout: OUT std_logic); -- data output
+   END COMPONENT;
+   
    signal state: std_logic;
    signal carry: std_logic;
    signal inc_hys: std_logic;
    signal dec_hys: std_logic;
    signal load_hys: std_logic;
    signal out_cnt_hys: std_logic_vector(SAMPLES-1 DOWNTO 0);
+   signal change_state : std_logic;
    
 BEGIN
    
@@ -58,29 +68,42 @@ BEGIN
             din   => ZERO_VECTOR,
             dout  => out_cnt_hys);
                
+   flippy: dff
+   GENERIC MAP(RSTDEF => RSTDEF)
+   PORT MAP   (rst => rst,
+               clk => clk,
+               din => not state,
+               en => change_state,
+               dout => state);
+   
+   
+   
    dec_hys <= din_hys xnor state;       
    inc_hys <= din_hys xor state;        
    dout_hys <= state;
+   load_hys <= carry and out_cnt_hys(SAMPLES-1);
+   
+
+   change_state <= en and carry and not out_cnt_hys(SAMPLES-1);
    
    
-   process (rst, clk) begin
-      if rst=RSTDEF then
-			state <= '0';
-      elsif rising_edge(clk) then
-         if swrst=RSTDEF then
-            state <= '0';
-         elsif en='1' then
-            if carry='1' then
-               if out_cnt_hys(SAMPLES-1)='1' then 
-                  load_hys<='1'; -- load Counter with 0
-               else
-                  state <= not state;
-               end if;
-            end if;
-         else
-            load_hys<='0';
-         end if;
-      end if;
-   end process;
+   -- process (rst, clk) begin
+      -- if rst=RSTDEF then
+			-- state <= '0';
+      -- elsif rising_edge(clk) then
+         -- if swrst=RSTDEF then
+            -- state <= '0';
+         -- elsif en='1' then
+            -- if carry='1' then
+               -- if out_cnt_hys(SAMPLES-1)='0' then 
+                  -- state <= not state;
+               -- end if;
+               
+            -- end if;
+            
+         -- else
+         -- end if;
+      -- end if;
+   -- end process;
    
 END hysteresys_behaviour;
