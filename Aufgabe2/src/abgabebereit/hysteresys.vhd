@@ -57,7 +57,57 @@ BEGIN
             cout  => carry,
             din   => ZERO_VECTOR,
             dout  => out_cnt_hys);
-               
+          
+
+   -- process (rst, clk) begin
+      -- if rst=RSTDEF then
+         -- state <= '0';
+      -- elsif rising_edge(clk) then
+         -- if swrst=RSTDEF then
+            -- state <= '0';
+         -- elsif en='0' then
+            -- load_hys<='0';
+         -- elsif state='1' then
+               -- if carry='1' then
+                  -- if out_cnt_hys(SAMPLES-1)='1' then 
+                     -- load_hys <='1'; -- load Counter with 0
+                  -- else
+                     -- state <= '1';
+                  -- end if;
+               -- elsif din_hys='1' then
+                    -- inc_hys<='1';
+                    -- dec_hys<='0';
+               -- elsif din_hys='0' then
+                    -- inc_hys<='0';
+                    -- dec_hys<='1';
+               -- end if;
+         
+         -- elsif state='1' then
+               -- if carry='1' then
+                  -- if out_cnt_hys(SAMPLES-1)='1' then 
+                     -- load_hys <='1'; -- load Counter with 0
+                  -- else
+                     -- state <= '0';
+                  -- end if;
+               -- elsif din_hys='0' then
+                    -- inc_hys<='1';
+                    -- dec_hys<='0';
+               -- elsif din_hys='1' then
+                    -- inc_hys<='0';
+                    -- dec_hys<='1'; 
+               -- end if;
+         
+         
+         -- end if;
+      
+      -- end if;
+   
+   -- end process;
+
+   -- dout_hys <= state;
+   
+   
+
    dec_hys <= din_hys xnor state;       
    inc_hys <= din_hys xor state;        
    dout_hys <= state;

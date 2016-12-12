@@ -90,7 +90,7 @@ BEGIN
                   en => enable,
                   swrst => swrst,
                   din => BTN2,
-                  dout => open, -- inc
+                  dout => open, 
                   redge => open,
                   fedge => inc);
    
