@@ -69,7 +69,7 @@ ARCHITECTURE structure OF aufgabe2 IS
    SIGNAL load:   std_logic;
    SIGNAL cnt:    std_logic_vector(CNTLEN-1 DOWNTO 0);
    SIGNAL din:    std_logic_vector(CNTLEN-1 DOWNTO 0);
-
+   
 BEGIN
 
    swrst <= NOT RSTDEF;

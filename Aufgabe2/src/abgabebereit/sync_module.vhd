@@ -68,8 +68,8 @@ BEGIN
                   swrst => swrst,
                   din => BTN0,
                   dout => open,
-                  redge => load,
-                  fedge => open);
+                  redge => open,
+                  fedge => load);
    
    
    sync_buf_2: sync_buffer
