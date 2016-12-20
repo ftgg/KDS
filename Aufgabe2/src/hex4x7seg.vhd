@@ -22,7 +22,6 @@ END hex4x7seg;
 ARCHITECTURE struktur OF hex4x7seg IS
   -- hier sind benutzerdefinierte Konstanten und Signale einzutragen
 	constant DIV_MAX : natural := 14;
-   
    COMPONENT freq_divisor IS
    GENERIC (RSTDEF:  std_logic :='1';
             CNTLEN:  natural   := DIV_MAX);

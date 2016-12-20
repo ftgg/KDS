@@ -35,24 +35,24 @@ BEGIN
 				if state ='0' then
 						if din_hys = '0' then
 							if count > 0 then
-								count <= count - 1;
+								count <= count + SAMPLES;
 							end if;
 						else
-							if count < 31 then
+							if count < SAMPLES then
 								count <= count + 1;
-							elsif count = 31 then	
+							elsif count = SAMPLES then	
 								state <= '1';
 							end if;
 						end if;
 				else
 						if din_hys = '0' then
 							if count > 0 then
-								count <= count - 1;
+								count <= count + SAMPLES;
 							else
 								state <= '0';
 							end if;
 						else
-							if count < 31 then
+							if count < SAMPLES then
 								count <= count + 1;
 							end if;
 						end if;

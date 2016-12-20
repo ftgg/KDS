@@ -43,36 +43,38 @@ END std_counter;
 -- zur Entity std_counter implementiert werden
 --
 ARCHITECTURE struktur OF std_counter IS
-   signal cnt_sig : std_logic_vector(CNTLEN   downto 0);
 	signal cnt_reg : std_logic_vector(CNTLEN-1 downto 0);
-
+   constant M_ONE : natural := (2 ** (CNTLEN) - 1);
 BEGIN
 
-   -- cnt_sig <= (others => '0') WHEN rst=RSTDEF ELSE
-              -- ('0' & cnt_reg)+1 WHEN inc='1' ELSE
-              -- ('0' & cnt_reg)-1 WHEN dec='1' ELSE
-              -- ('0' & cnt_reg)      
 	process (rst, clk) begin
 		if rst=RSTDEF then
-			cnt_sig <= (others => '0');
+			cnt_reg <= (others => '0');
 		elsif rising_edge(clk) then
 			if swrst=RSTDEF then
-				cnt_sig <= (others => '0');
+				cnt_reg <= (others => '0');
          else
             if en='1' then
                if load='1' then
-                  cnt_sig <= '0' & din;
+                  cnt_reg <= din;
                elsif dec='1' then
-                  cnt_sig <= '0' & cnt_reg - 1;
+                  if cnt_reg = (cnt_reg'range => '0') then
+                     cout <= '1';
+                  else
+                     cout <= '0';
+                  end if;
+                  cnt_reg <= (cnt_reg) -1;
                elsif inc='1' then
-                  cnt_sig <= '0' & cnt_reg + 1;
+                  if cnt_reg = (cnt_reg'range => '1') then
+                     cout <= '1';
+                  else
+                     cout <= '0';
+                  end if;
+                  cnt_reg <= (cnt_reg) + 1;
                end if;
             end if;
 			end if;
 		end if;
-      
-      cnt_reg <= cnt_sig(CNTLEN-1 DOWNTO 0);
-      cout <= cnt_sig(CNTLEN);
-      dout <= cnt_sig(CNTLEN-1 downto 0);
+      dout <= cnt_reg;
 	end process;
 END struktur;		
