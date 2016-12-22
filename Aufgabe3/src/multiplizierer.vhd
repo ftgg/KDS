@@ -15,10 +15,26 @@ ENTITY multiplizierer IS
         dout:  OUT std_logic_vector(35 DOWNTO 0)); -- output Skalar
 END multiplizierer;
 
+
+ARCHITECTURE behaviour OF multiplizierer IS
+
+signal reset : std_logic; 
+
+BEGIN
+
+reset <= (rst = RSTDEF) or (swrst = RSTDEF)
+
 MULT18X18S_inst : MULT18X18S
 PORT MAP ( P => dout,      -- OUTPUT
            A => op1(OPLEN-1) & op1(OPLEN-1) & op1, -- OP1
            B => op2(OPLEN-1) & op2(OPLEN-1) & op2, -- OP2
            C => clk,        -- CLK
            CE => en,       -- ENABLE
-           R => rst or swrst); -- RESET synchronous
+           R => reset); -- RESET synchronous
+
+
+
+
+
+           
+END behaviour;
