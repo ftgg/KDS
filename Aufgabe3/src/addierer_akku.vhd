@@ -11,3 +11,25 @@ ENTITY addierer_akku IS
         op:   IN std_logic_vector(OPLEN-1 DOWNTO 0);
         dout:  OUT std_logic_vector(43 DOWNTO 0)); -- output Skalar
 END addierer_akku;
+
+ARCHITECTURE structure OF addierer_akku IS
+   signal akkumulator: std_logic_vector(43 DOWNTO 0)
+
+BEGIN
+
+dout <= akkumulator(15 DOWNTO 0);
+
+   process (rst, clk, swrst) is
+      begin
+         if rst = RSTDEF then
+            akkumulator <= (others => '0');
+         elsif rising_edge(clk) then
+            if swrst = RSTDEF then
+               akkumulator <= (others => '0');
+            elseif en = '1' then
+               akkumulator <= akkumulator + op;
+            end if;
+         end if;
+   end process;
+
+END structure;
