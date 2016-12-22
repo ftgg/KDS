@@ -51,7 +51,7 @@ BEGIN
                  enable => enable,
                  dout => res);
 
-   sw : steuerwerk
+   stw : steuerwerk
    GENERIC MAP(RSTDEF => RSTDEF)
    PORT MAP    (rst => rst,
                 clk => clk,

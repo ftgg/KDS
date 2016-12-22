@@ -1,5 +1,6 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
+use ieee.numeric_std.all;
 
 ENTITY addierer_akku IS
    GENERIC(RSTDEF: std_logic := '0';
@@ -25,32 +26,30 @@ END COMPONENT;
    
    signal akkumulator: std_logic_vector(43 DOWNTO 0);
    signal next_akku: std_logic_vector(43 DOWNTO 0);
-
+   signal op_extension: std_logic_vector(43 DOWNTO 0);
+   
 BEGIN
 
-addierer: adsu
-GENERIC MAP(N <= 44)
-PORT MAP(sub <= '0',
-         cout <= next_akku,
-         op1 <= akkumulator,
-         op2 <= op,
-         dout <= next_akku);
+   op_extension <= std_logic_vector(resize(signed(op), op_extension'length));
 
+   addierer: adsu
+   GENERIC MAP(N => 44)
+   PORT MAP(sub => '0',
+            cout => open,
+            op1 => akkumulator,
+            op2 => op_extension,
+            dout => next_akku);
 
+   dout <= akkumulator;
 
-dout <= akkumulator;
-
-
-
-
-   process (rst, clk, swrst) is
+   process (rst, clk) is
       begin
          if rst = RSTDEF then
             akkumulator <= (others => '0');
          elsif rising_edge(clk) then
             if swrst = RSTDEF then
                akkumulator <= (others => '0');
-            elseif en = '1' then
+            elsif en = '1' then
                akkumulator <= next_akku;
             end if;
          end if;

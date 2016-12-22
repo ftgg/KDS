@@ -1,5 +1,6 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_unsigned.ALL;
 
 ENTITY steuerwerk IS
    GENERIC(RSTDEF: std_logic := '0');
@@ -11,3 +12,79 @@ ENTITY steuerwerk IS
         enable:OUT std_logic_vector(2 DOWNTO 0);   -- enable Rechenwerk
         done:  OUT std_logic);                     -- done,           high active
 END steuerwerk;
+
+ARCHITECTURE structure OF steuerwerk IS
+
+   type TState IS (S0,S1,S2,S3,S4,S5,S6,S7,S8);
+   signal state : TState;
+   signal index: std_logic_vector(7 DOWNTO 0);
+
+BEGIN
+
+process(clk, rst) IS
+BEGIN
+   if rst = RSTDEF then
+      state <= S0;
+      enable <= "000";
+   elsif rising_edge(clk) then
+      if swrst = RSTDEF then
+         state <= S0;
+         enable <= "000";
+      else
+         case state IS
+            WHEN S0 =>
+               if strt = '1' then
+                  state <= S7;
+               end if;
+            WHEN S7 =>
+               --initialzustand
+               index <= sw;
+               if index = X"00" then
+                  state <= S8;
+               else
+                  state <= S1;
+               end if;
+            WHEN S1 =>
+               index <= index - 1;
+               enable(0) <= '1';
+               if index = X"01" then
+                  state <= S6;
+               else
+                  state <= S2;
+               end if;
+            WHEN S2 =>
+               index <= index - 1;
+               enable(1) <= '1';
+               enable(2) <= '1';
+               if index = X"01" then
+                  state <= S4;
+               else
+                  state <= S3;
+               end if;
+            WHEN S3 =>
+               index <= index - 1;
+               if index = X"01" then
+                  state <= S4;
+               else
+                  state <= S3; --TODO unnötig?
+               end if;
+            WHEN S4 =>
+               enable(0) <= '0';
+               state <= S5;
+            WHEN S5 =>
+               enable(1) <= '0';
+               state <= S8;
+            WHEN S8 =>
+               enable(2) <= '0';
+               done <= '1';
+               state <= S0;
+            WHEN S6 =>
+               enable(0) <= '0';
+               enable(1) <= '1';
+               state <= S5;
+         end case;
+      end if;
+   end if;
+end process;
+
+END structure;

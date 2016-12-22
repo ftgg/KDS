@@ -50,13 +50,19 @@ ARCHITECTURE behaviour OF rechenwerk IS
    
    signal ram_data_a : std_logic_vector(15 DOWNTO 0);
    signal ram_data_b : std_logic_vector(15 DOWNTO 0);
-   signal mult_out : std_logic_vector(35 DOWNTO 0);
+   signal mult_out : std_logic_vector(35 DOWNTO 0); 
+	
+	signal addra: std_logic_vector(9 DOWNTO 0);
+	signal addrb: std_logic_vector(9 DOWNTO 0);
+	
 BEGIN
 
-
+	addra <= "00" & index;
+	addrb <= "01" & index;
+	
    RAMBLOCK : ram_block
-   PORT MAP( addra => "00" & index,
-             addrb => "01" & index,
+   PORT MAP( addra => addra,
+             addrb => addrb,
              clka => clk,
              clkb => clk,
              douta => ram_data_a,
@@ -81,6 +87,7 @@ BEGIN
    GENERIC MAP ( RSTDEF => RSTDEF,
                  OPLEN => 36)
    PORT MAP ( rst => rst,
+				  swrst => swrst,
               clk => clk,
               en => enable(2),
               op => mult_out,

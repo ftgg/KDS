@@ -19,22 +19,25 @@ END multiplizierer;
 ARCHITECTURE behaviour OF multiplizierer IS
 
 signal reset : std_logic; 
+signal opA : std_logic_vector(17 DOWNTO 0);
+signal opB : std_logic_vector(17 DOWNTO 0);
 
 BEGIN
 
-reset <= (rst = RSTDEF) or (swrst = RSTDEF)
+   reset <= '1' WHEN rst=RSTDEF ELSE
+            '1' WHEN swrst=RSTDEF ELSE
+            '0';
 
-MULT18X18S_inst : MULT18X18S
-PORT MAP ( P => dout,      -- OUTPUT
-           A => op1(OPLEN-1) & op1(OPLEN-1) & op1, -- OP1
-           B => op2(OPLEN-1) & op2(OPLEN-1) & op2, -- OP2
-           C => clk,        -- CLK
-           CE => en,       -- ENABLE
-           R => reset); -- RESET synchronous
+   opA <= op1(OPLEN-1) & op1(OPLEN-1) & op1;
+   opB <= op2(OPLEN-1) & op2(OPLEN-1) & op2;   
+      
+   MULT18X18S_inst : MULT18X18S
+   PORT MAP ( P => dout,      -- OUTPUT
+              A => opA, -- OP1
+              B => opB, -- OP2
+              C => clk,        -- CLK
+              CE => en,       -- ENABLE
+              R => reset); -- RESET synchronous
 
-
-
-
-
-           
+              
 END behaviour;
