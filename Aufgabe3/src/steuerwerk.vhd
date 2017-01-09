@@ -33,7 +33,7 @@ BEGIN
          index <= sw;
          done <= '0';
       elsif rising_edge(clk) then
-         rnrst <= not RSTDEF; -- vllt nur in 2 zuataenden
+         rnrst <= not RSTDEF; -- hier ein slice weniger als in den zwei Methoden
          if swrst = RSTDEF then
             state <= S0;
             enable <= "000";
@@ -76,8 +76,8 @@ BEGIN
                   index <= index - 1;
                   if index = X"01" then
                      state <= S4;
-                  else
-                     state <= S3; --TODO unnötig?
+                  --else
+                     --im selben zustand bleiben
                   end if;
                WHEN S4 =>
                   enable <= "011";

@@ -23,7 +23,8 @@ ARCHITECTURE structure OF addierer_akku IS
 BEGIN
 
    op_extension <= std_logic_vector(resize(signed(op), op_extension'length));
-   --next_akku <= akkumulator + op_extension;
+   --next_akku <= akkumulator + op_extension; jetzt im schaltwerk, da ansonsten kurzschluss bei reset =/
+   -- keine negative auswirkung auf Periode oder slices =)
    dout <= akkumulator;
 
    process (rst, clk) is
