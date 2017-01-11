@@ -58,13 +58,13 @@ BEGIN
     
   hys: hysteresys
   GENERIC MAP (RSTDEF => RSTDEF,
-               SAMPLES => 15)
+               SAMPLES => 32)
    PORT MAP(rst => rst,
             clk => clk,
             din_hys => ff2_out,
-         dout_hys => out_hys,
-         en=>en,
-         swrst=>swrst);
+            dout_hys => out_hys,
+            en=>en,
+            swrst=>swrst);
 	
    --flanken detector
 	dout <= ff3_out;

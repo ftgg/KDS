@@ -22,7 +22,7 @@ END sync_module;
 --
 
 ARCHITECTURE sync_module_behaviour OF sync_module IS
-   CONSTANT FREQ_DIVISOR_LEN: natural := 15;
+   CONSTANT FREQ_DIVISOR_LEN: natural := 11;
    
    COMPONENT freq_divisor IS
    GENERIC (RSTDEF:  std_logic :='1';
