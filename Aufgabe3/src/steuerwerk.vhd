@@ -17,80 +17,84 @@ END steuerwerk;
 
 ARCHITECTURE structure OF steuerwerk IS
 
-   type TState IS (S0,S1,S2,S3,S4,S5,S6,S7,S8);
+   type TState IS (S0,S1,S2,S3,S4,S5,S6);
    signal state : TState;
-   signal index: std_logic_vector(7 DOWNTO 0);
-
+   signal enable_int : std_logic_vector(2 DOWNTO 0);
+   signal index: std_logic_vector(7 DOWNTO 0) := X"00";
+   signal tmp_index: std_logic_vector(7 DOWNTO 0);
+   signal index_eq_one: std_logic;
 BEGIN
-
+   enable <= enable_int;
    scalar_index <= index;
 
+   index_eq_one <= '1' WHEN index = X"01" ELSE
+                   '0';
+   
+   tmp_index <= index -1;
+   
    process(clk, rst) IS
    BEGIN
       if rst = RSTDEF then
          state <= S0;
-         enable <= "000";
+         enable_int <= "000";
          index <= sw;
          done <= '0';
       elsif rising_edge(clk) then
          rnrst <= not RSTDEF; -- hier ein slice weniger als in den zwei Methoden
          if swrst = RSTDEF then
             state <= S0;
-            enable <= "000";
+            enable_int <= "000";
             index <= sw;
             done <= '0';
          else
             case state IS
                WHEN S0 =>
-                  done <= '0';
-                  if strt = '1' then
-                     state <= S7;
-                  end if;
-               WHEN S7 =>
-                  --initialzustand
+                  enable_int <= "000";
                   index <= sw;
-                  rnrst <= RSTDEF;
-                  if sw = X"00" then
-                     state <= S8;
-                  else
-                     state <= S1;
+                  if enable_int(0) = '1' then
+                     done <= '1';
                   end if;
+                  
+                  if strt = '1' then
+                     done <= '0';
+                     rnrst <= RSTDEF;
+                     if sw = X"00" then
+                        done <= '1';
+                     else
+                        state <= S1;
+                     end if;
+                  end if;
+
                WHEN S1 =>
-                  index <= index - 1;
-                  enable <= "100";
-                  if index = X"01" then
+                  index <= tmp_index;
+                  enable_int <= "100";
+                  if index_eq_one = '1' then
                      state <= S6;
                   else
                      state <= S2;
                   end if;
                WHEN S2 =>
-                  index <= index - 1;
-                  enable <= "110";
-                  if index = X"01" then
+                  index <= tmp_index;
+                  enable_int <= "110";
+                  if index_eq_one = '1' then
                      state <= S4;
                   else
                      state <= S3;
                   end if;
                WHEN S3 =>
-                  enable <= "111";
-                  index <= index - 1;
-                  if index = X"01" then
+                  enable_int <= "111";
+                  index <= tmp_index;
+                  if index_eq_one = '1' then
                      state <= S4;
-                  --else
-                     --im selben zustand bleiben
                   end if;
                WHEN S4 =>
-                  enable <= "011";
+                  enable_int <= "011";
                   state <= S5;
                WHEN S5 =>
-                  enable <= "001";
-                  state <= S8;
-               WHEN S8 =>
-                  enable <= "000";
-                  done <= '1';
+                  enable_int <= "001";
                   state <= S0;
                WHEN S6 =>
-                  enable <= "010";
+                  enable_int <= "010";
                   state <= S5;
             end case;
          end if;
