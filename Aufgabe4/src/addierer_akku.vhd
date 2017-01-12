@@ -33,7 +33,7 @@ BEGIN
             akkumulator <= (others => '0');
          elsif rising_edge(clk) then
             if swrst = RSTDEF then
-               akkumulator <= (others => '0');
+               akkumulator <= op_extension;
             elsif en = '1' then
                akkumulator <= akkumulator + op_extension;
             end if;

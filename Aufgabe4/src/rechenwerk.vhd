@@ -6,6 +6,7 @@ ENTITY rechenwerk IS
    PORT(rst:   IN  std_logic;                      -- reset,          RSTDEF active
         clk:   IN  std_logic;                      -- clock,          rising edge
         swrst: IN  std_logic;                      -- software reset, RSTDEF active
+        akkurst: IN std_logic;                     -- akku reset         
         adr1:  IN std_logic_vector(9 DOWNTO 0);
         adr2:  IN std_logic_vector(9 DOWNTO 0);
         enable: IN std_logic_vector(2 DOWNTO 0);
@@ -52,7 +53,7 @@ ARCHITECTURE behaviour OF rechenwerk IS
    signal rom_data_a : std_logic_vector(15 DOWNTO 0);
    signal rom_data_b : std_logic_vector(15 DOWNTO 0);
    signal mult_out : std_logic_vector(35 DOWNTO 0); 
-	
+	signal akku_reset : std_logic;
 BEGIN
 
 	
@@ -79,11 +80,16 @@ BEGIN
                 dout => mult_out);
 
    
+   akku_reset <= RSTDEF WHEN akkurst = RSTDEF ELSE
+                 RSTDEF WHEN rst = RSTDEF ELSE
+                 not RSTDEF;              
+   
    ADD_AKKU: addierer_akku
    GENERIC MAP ( RSTDEF => RSTDEF,
                  OPLEN => 36)
    PORT MAP ( rst => rst,
-				  swrst => swrst,
+              -- akkurst => akkurst,
+				  swrst => akku_reset,
               clk => clk,
               en => enable(0),
               op => mult_out,
